@@ -1,4 +1,4 @@
-extends Node2D
+extends Sprite2D
 class_name City
 
 # Signal emitted when a person is spawned
@@ -7,8 +7,9 @@ signal person_spawned(person: Node2D)
 # Preload the person scene
 @onready var person_scene = preload("res://scenes/person/Person.tscn")
 
-# Reference to the visual ColorRect
-@onready var visual: ColorRect = $Visual
+# Texture resources for dark and light states
+@export var dark_texture: Texture2D
+@export var light_texture: Texture2D
 
 # Export variables for configuration
 @export var spawn_rate: float = 1.0  # persons per second
@@ -32,17 +33,26 @@ func _ready() -> void:
 	_player = get_node_or_null("/root/Main/Player")
 	if _player == null:
 		push_warning("City: Could not find Player node at /root/Main/Player")
+	# Set dark texture on start
+	texture = dark_texture
+	queue_redraw()
+
+func _draw() -> void:
+	# Draw a circle in the background with radius equal to light_check_radius
+	draw_circle(Vector2.ZERO, light_check_radius, Color(1.0, 1.0, 1.0, 0.2))
 
 func _process(delta: float) -> void:
 	# Update light state from player's light_state method
 	if _player != null and _player.has_method("light_state"):
 		light_state = _player.call("light_state", global_position, light_check_radius)
 
+	# Update sprite texture based on light state
 	if light_state >= 1.0:
-		visual.color = Color(0.85, 0.85, 0.85, 1.0)
-	
-	if light_state <= 0:
-		visual.color = Color(1, 0.2, 0.8, 1)
+		# Fully lit - use light texture
+		texture = light_texture
+	else:
+		# Dark or partially lit - use dark texture
+		texture = dark_texture
 	
 	if spawn_rate <= 0.0:
 		return
@@ -66,10 +76,10 @@ func _spawn_person() -> void:
 	var angle := randf() * TAU  # Random angle in radians
 	var max_distance := maxf(min_spawn_radius, max_spawn_radius)  # Ensure max >= min
 	var distance := min_spawn_radius + randf() * (max_distance - min_spawn_radius)  # Random distance in range [min, max]
-	var offset := Vector2(cos(angle), sin(angle)) * distance
+	var spawn_offset := Vector2(cos(angle), sin(angle)) * distance
 	
 	# Set person's global position
-	person.global_position = global_position + offset
+	person.global_position = global_position + spawn_offset
 	
 	# Emit signal - Main will handle adding to the Persons container
 	person_spawned.emit(person)

@@ -1,4 +1,4 @@
-extends Node2D
+extends Sprite2D
 class_name Person
 
 # Movement configuration (PRD parameters)
@@ -8,8 +8,9 @@ class_name Person
 @export var lightSteal: float = 10.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
 @export var PersonRadius: float = 10.0
 
-# Reference to the visual ColorRect
-@onready var visual: ColorRect = $Visual
+# Texture resources for dark and light states
+@export var dark_texture: Texture2D
+@export var light_texture: Texture2D
 
 # Internal state
 var _pulse_accum := 0.0
@@ -21,18 +22,21 @@ func _ready() -> void:
 	_player_node = get_node_or_null("/root/Main/Player")
 	if _player_node == null:
 		push_warning("Person: Could not find Player node at /root/Main/Player")
+	# Set dark texture on start
+	texture = dark_texture
 
 func _process(delta: float) -> void:
 	# Update light state from player's light_state method
 	if _player_node != null and _player_node.has_method("light_state"):
 		state = _player_node.call("light_state", global_position, PersonRadius)
 	
-	# Update visual color based on state
+	# Update sprite texture based on state
 	if state >= 1.0:
-		visual.color = Color(0.8, 0.8, 0.8, 1)
-	
-	if state <= 0:
-		visual.color = Color(1, 0.2, 0.8, 1)
+		# Fully lit - use light texture
+		texture = light_texture
+	else:
+		# Dark or partially lit - use dark texture
+		texture = dark_texture
 	
 	# Only move if we're in dark state (for now, always move - state management comes later)
 	# Movement pulses occur every move_pulse_speed seconds
