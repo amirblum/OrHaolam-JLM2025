@@ -56,6 +56,8 @@ func _input(event: InputEvent) -> void:
 			_add_float(&"auto_click_rate", -auto_click_rate_step, 0.1)
 		KEY_D:
 			_add_float(&"auto_click_rate", auto_click_rate_step, 0.1)
+		KEY_T:
+			_spawn_test_circle()
 		_:
 			return
 
@@ -90,6 +92,7 @@ func _status_text() -> String:
 		+ "Q/A: lightDecay = %.2f\n" % float(player.get("lightDecay"))
 		+ "W/S: clickImpact = %.2f\n" % float(player.get("clickImpact"))
 		+ "E/D: auto_click_rate = %.2f\n" % float(player.get("auto_click_rate"))
+		+ "T: spawn TestCircle\n"
 	)
 
 func _find_player() -> Node:
@@ -115,3 +118,52 @@ func _find_player() -> Node:
 			return any
 
 	return null
+
+func _spawn_test_circle() -> void:
+	if player == null or not is_instance_valid(player):
+		push_warning("DEBUG: Cannot spawn TestCircle, player not found.")
+		return
+	
+	var viewport := get_viewport_rect().size
+	var circle := TestCircle.new()
+	circle.position = Vector2(randf_range(0, viewport.x), randf_range(0, viewport.y))
+	circle.radius = randf_range(5.0, 100.0)
+	circle.player_ref = player
+	add_child(circle)
+	print("DEBUG: TestCircle spawned at ", circle.position, " with radius ", circle.radius)
+
+# ============================================================================
+# TestCircle: visualizes light_state query result
+# ============================================================================
+
+class TestCircle extends Node2D:
+	var radius: float = 20.0
+	var player_ref: Node = null
+	var light_value: float = 0.0
+	
+	func _process(_delta: float) -> void:
+		if player_ref == null or not is_instance_valid(player_ref):
+			queue_free()
+			return
+		
+		if not player_ref.has_method("light_state"):
+			return
+		
+		light_value = player_ref.call("light_state", global_position, radius)
+		queue_redraw()
+	
+	func _draw() -> void:
+		var color := Color.WHITE
+		match light_value:
+			0.0:
+				color = Color(0.3, 0.3, 0.3, 0.8) # grey (dark)
+			0.5:
+				color = Color(0.7, 0.7, 0.7, 0.8) # mid-grey (partial)
+			1.0:
+				color = Color(1.0, 1.0, 1.0, 0.8) # white (lit)
+		
+		# Draw filled circle
+		draw_circle(Vector2.ZERO, radius, color)
+		
+		# Draw outline for visibility
+		draw_arc(Vector2.ZERO, radius, 0, TAU, 32, Color.BLACK, 2.0)
