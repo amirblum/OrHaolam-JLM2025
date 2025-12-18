@@ -8,6 +8,8 @@ extends Node2D
 @export var hold_enable: bool = false # Upgrade: allows click-and-hold repeating ticks
 @export var auto_click_rate: float = 12.0 # Clicks per second while holding / auto-clicking
 @export var auto_click: bool = false # If true, auto-click even when not holding
+@export var player_radius: float = 50.0 # Distance at which Persons steal light from Jerusalem, PRD `player_radius`
+@export var lightBank: float = 100.0 # Light currency, PRD `lightBank`
 
 const _MERGE_EPS_RAD := 0.00001
 
@@ -200,3 +202,6 @@ func _merge_beams(ref_angle: float) -> void:
 
 func get_beams() -> Array[Node2D]:
 	return beams
+
+func decrease_light_bank(amount: float) -> void:
+	lightBank = maxf(0.0, lightBank - amount)
