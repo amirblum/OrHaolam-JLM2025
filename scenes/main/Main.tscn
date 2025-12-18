@@ -9,7 +9,7 @@
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 DEBUG = true
-total_persons_for_audio = 15
+total_persons_for_audio = 40
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
