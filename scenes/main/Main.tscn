@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=4 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/city/City.tscn" id="3_city"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -14,3 +15,12 @@ lightDecay = 0.6
 auto_click_rate = 6.0
 
 [node name="Beams" type="Node2D" parent="Player"]
+
+[node name="Cities" type="Node2D" parent="."]
+
+[node name="TestCity" parent="Cities" instance=ExtResource("3_city")]
+position = Vector2(400, 300)
+spawn_rate = 0.25
+cityGenRadius = 100.0
+
+[node name="Persons" type="Node2D" parent="."]
