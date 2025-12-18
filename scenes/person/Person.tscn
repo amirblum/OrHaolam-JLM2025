@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://u5xrqfthhtgo"]
+
+[ext_resource type="Script" uid="uid://buhe673o0scuc" path="res://scenes/person/Person.gd" id="1_person"]
+
+[node name="Person" type="Node2D"]
+script = ExtResource("1_person")
+
+[node name="Visual" type="ColorRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -5.0
+offset_top = -20.0
+offset_right = 5.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1, 2)
+color = Color(0.2, 0.2, 0.8, 1)
