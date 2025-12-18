@@ -1,10 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=10 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 [ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
-[ext_resource type="Texture2D" uid="uid://l0p2k5suw4uf" path="res://assets/finals/barcelona_dark.png" id="5_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
 [ext_resource type="Texture2D" uid="uid://byw7585wbx1xx" path="res://assets/finals/moscow_dark.png" id="6_3km4f"]
 [ext_resource type="Texture2D" uid="uid://bh0mhmaav0vpo" path="res://assets/finals/moscow_light.png" id="7_qkm1d"]
@@ -38,8 +37,6 @@ texture = ExtResource("4_gyg6b")
 
 [node name="City1" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(98, 110)
-texture = ExtResource("5_1rhdn")
-dark_texture = ExtResource("5_1rhdn")
 spawn_rate = 0.198
 spawn_rate_variance = 0.5
 max_spawn_radius = 350.0
