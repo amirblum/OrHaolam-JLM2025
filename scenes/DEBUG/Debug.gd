@@ -83,8 +83,10 @@ func _update_label() -> void:
 	_label.text = _status_text()
 
 func _status_text() -> String:
+	var fps := Engine.get_frames_per_second()
 	return (
 		"DEBUG\n"
+		+ "FPS: %d\n" % fps
 		+ "P: hold_enable = %s\n" % str(player.get("hold_enable"))
 		+ "O: auto_click = %s\n" % str(player.get("auto_click"))
 		+ "Q/A: lightDecay = %.2f\n" % float(player.get("lightDecay"))
