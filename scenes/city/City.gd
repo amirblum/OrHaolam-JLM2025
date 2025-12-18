@@ -9,7 +9,8 @@ signal person_spawned(person: Node2D)
 
 # Export variables for configuration
 @export var spawn_rate: float = 1.0  # persons per second
-@export var city_gen_radius: float = 50.0  # spawn radius from city
+@export var max_spawn_radius: float = 50.0  # maximum spawn radius from city
+@export var min_spawn_radius: float = 10.0  # minimum spawn radius from city
 @export var city_name: String = "City"  # city name 
 
 # Timer accumulator for spawn rate
@@ -30,9 +31,10 @@ func _spawn_person() -> void:
 	# Instantiate Person scene
 	var person := person_scene.instantiate()
 	
-	# Calculate random position within city_gen_radius from city position
+	# Calculate random position between min_spawn_radius and max_spawn_radius from city position
 	var angle := randf() * TAU  # Random angle in radians
-	var distance := randf() * city_gen_radius  # Random distance within radius
+	var max_distance := maxf(min_spawn_radius, max_spawn_radius)  # Ensure max >= min
+	var distance := min_spawn_radius + randf() * (max_distance - min_spawn_radius)  # Random distance in range [min, max]
 	var offset := Vector2(cos(angle), sin(angle)) * distance
 	
 	# Set person's global position
