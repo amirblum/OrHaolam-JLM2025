@@ -51,7 +51,7 @@ func _process(delta: float) -> void:
 	else:
 		rotation_degrees = 0.0	
 	if state <= 0:
-    	# Dark or partially lit - use dark texture
+		# Dark or partially lit - use dark texture
 		texture = dark_texture
 		dancing = false
 		_happy_accum = 0.0
@@ -103,7 +103,6 @@ func _attempt_movement_pulse() -> void:
 	global_position = new_position
 
 func _steal_light() -> void:
-	visual.color = Color(0.994, 0.0, 0.0, 1.0)
 	get_tree().paused = true
 	var timer := get_tree().create_timer(5.0, true)
 	await timer.timeout
