@@ -26,4 +26,4 @@ window/size/borderless=true
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.05, 0.05, 0.05, 1)
+environment/defaults/default_clear_color=Color(0.6862745, 0.6431373, 0.8862745, 1)
