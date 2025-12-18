@@ -23,6 +23,9 @@ static func _unwrap_near(a: float, ref: float) -> float:
 # Layer/container for all active beam instances (cones)
 @onready var beams_layer: Node2D = get_node_or_null("Beams")
 
+# Reference to the Jerusalem sprite
+@onready var jerusalem: Sprite2D = get_node_or_null("Jerusalem")
+
 # Accessible memory: keep references to currently-active beam instances.
 var beams: Array[Node2D] = []
 
@@ -36,6 +39,19 @@ func _ready() -> void:
 		beams_layer = Node2D.new()
 		beams_layer.name = "Beams"
 		add_child(beams_layer)
+	
+	# Position Jerusalem sprite at the screen center (where beams originate)
+	if jerusalem != null:
+		var screen_center := get_viewport_rect().size / 2
+		jerusalem.position = to_local(screen_center)
+	
+	queue_redraw()
+
+func _draw() -> void:
+	# Draw a circle at the screen center (where beams originate) with radius equal to player_radius
+	var screen_center := get_viewport_rect().size / 2
+	var local_center := to_local(screen_center)
+	draw_circle(local_center, player_radius, Color(1.0, 1.0, 1.0, 0.2))
 
 func _process(delta: float) -> void:
 	# Single click is always available (handled in _input).
