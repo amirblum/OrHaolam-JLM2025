@@ -1,22 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://u5xrqfthhtgo"]
+[gd_scene load_steps=4 format=3 uid="uid://u5xrqfthhtgo"]
 
 [ext_resource type="Script" uid="uid://buhe673o0scuc" path="res://scenes/person/Person.gd" id="1_person"]
+[ext_resource type="Texture2D" uid="uid://l422o44kroh1" path="res://assets/mockups/person_dark.png" id="2_8slcl"]
+[ext_resource type="Texture2D" uid="uid://xve2lw4ry5xj" path="res://assets/mockups/person_light.png" id="3_d5yk4"]
 
-[node name="Person" type="Node2D"]
+[node name="Person" type="Sprite2D"]
+texture = ExtResource("2_8slcl")
 script = ExtResource("1_person")
 drunkness = 1.0
-
-[node name="Visual" type="ColorRect" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -5.0
-offset_top = -20.0
-offset_right = 5.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(1, 2)
-color = Color(0.2, 0.2, 0.8, 1)
+dark_texture = ExtResource("2_8slcl")
+light_texture = ExtResource("3_d5yk4")
