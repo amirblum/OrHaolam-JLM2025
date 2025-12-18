@@ -3,38 +3,45 @@ class_name Person
 
 # Movement configuration (PRD parameters)
 @export var move_pulse_speed: float = 1.5 # Seconds between movement pulses, PRD `movePulseSpeed`
-@export var walk_distance: float = 20.0 # Distance moved per pulse, PRD `walkDistance`
-@export var drunkness: float = 0.3 # Random angle offset factor (radians), PRD `drunkness`
+@export var walk_distance: float = 15.0 # Distance moved per pulse, PRD `walkDistance`
+@export var drunkness: float = 0.4 # Random angle offset factor (radians), PRD `drunkness`
 @export var lightSteal: float = 10.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
 @export var PersonRadius: float = 10.0
 
+# Reference to the visual ColorRect
+@onready var visual: ColorRect = $Visual
 
 # Internal state
 var _pulse_accum := 0.0
 var _player_node: Node2D = null
+var state: float = 0.0 # Light state: 0.0 = dark, 0.5 = partial, 1.0 = engulfed
 
 func _ready() -> void:
-	# Find the Player node to access JerusalemRadius and lightBank
-	_find_player_node()
-
-func _find_player_node() -> void:
-	# Traverse up the tree to find the Main node, then find Player
-	# Person -> Persons -> Main -> Player
-	var current := get_parent()
-	while current != null:
-		_player_node = current.get_node_or_null("Player")
-		if _player_node != null:
-			break
-		current = current.get_parent()
+	# Get reference to the player node
+	_player_node = get_node_or_null("/root/Main/Player")
+	if _player_node == null:
+		push_warning("Person: Could not find Player node at /root/Main/Player")
 
 func _process(delta: float) -> void:
+	# Update light state from player's light_state method
+	if _player_node != null and _player_node.has_method("light_state"):
+		state = _player_node.call("light_state", global_position, PersonRadius)
+	
+	# Update visual color based on state
+	if state >= 1.0:
+		visual.color = Color(0.8, 0.8, 0.8, 1)
+	
+	if state <= 0:
+		visual.color = Color(1, 0.2, 0.8, 1)
+	
 	# Only move if we're in dark state (for now, always move - state management comes later)
 	# Movement pulses occur every move_pulse_speed seconds
 	if move_pulse_speed <= 0.0:
 		return
 	
 	var period := move_pulse_speed
-	_pulse_accum += delta
+	if state < 1.0:
+		_pulse_accum += delta
 	
 	while _pulse_accum >= period:
 		_pulse_accum -= period

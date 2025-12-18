@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 
 [node name="Main" type="Node2D"]
@@ -9,9 +9,10 @@ script = ExtResource("1_main")
 DEBUG = true
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-clickImpact = 0.2
+clickImpact = 1.0
 minClickDist = 4.0
-lightDecay = 0.6
+lightDecay = 2.5
+hold_enable = true
 auto_click_rate = 6.0
 
 [node name="Beams" type="Node2D" parent="Player"]
@@ -20,28 +21,28 @@ auto_click_rate = 6.0
 
 [node name="City1" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(98, 110)
-spawn_rate = 0.3
+spawn_rate = 0.15
 spawn_rate_variance = 0.5
 max_spawn_radius = 350.0
 min_spawn_radius = 50.0
 
 [node name="City2" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(1742, 220)
-spawn_rate = 0.2
+spawn_rate = 0.15
 spawn_rate_variance = 0.75
 max_spawn_radius = 400.0
 min_spawn_radius = 50.0
 
 [node name="City3" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(868, 988)
-spawn_rate = 0.1
+spawn_rate = 0.15
 spawn_rate_variance = 0.6
-max_spawn_radius = 500.0
+max_spawn_radius = 300.0
 min_spawn_radius = 50.0
 
 [node name="City4" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(142, 917)
-spawn_rate = 0.1
+spawn_rate = 0.15
 spawn_rate_variance = 0.6
 max_spawn_radius = 500.0
 min_spawn_radius = 50.0
