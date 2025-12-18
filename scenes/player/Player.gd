@@ -76,7 +76,6 @@ func _ready() -> void:
 	
 	# Position Jerusalem sprite at the screen center (where beams originate)
 	if jerusalem != null:
-		var screen_center := get_viewport_rect().size / 2
 		jerusalem.position = to_local(screen_center)
 	
 	queue_redraw()
