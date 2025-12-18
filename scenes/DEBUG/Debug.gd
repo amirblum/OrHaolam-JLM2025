@@ -94,6 +94,7 @@ func _status_text() -> String:
 		+ "Q/A: lightDecay = %.2f\n" % float(player.get("lightDecay"))
 		+ "W/S: clickImpact = %.2f\n" % float(player.get("clickImpact"))
 		+ "E/D: auto_click_rate = %.2f\n" % float(player.get("auto_click_rate"))
+		+ "TIME: %.2f\n" % float(player.get("time_accum"))
 	)
 
 func _find_player() -> Node:

@@ -1,20 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=4 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
-[ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
-[ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 DEBUG = true
-total_persons_for_audio = 15
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
 minClickDist = 4.0
-lightDecay = 2.0
+lightDecay = 2.2
 hold_enable = true
 auto_click_rate = 6.0
 lightBank = 0.0
@@ -24,10 +21,6 @@ fill_rate = 1.5
 light_cost = 2.2
 
 [node name="Beams" type="Node2D" parent="Player"]
-
-[node name="Jerusalem" type="Sprite2D" parent="Player"]
-position = Vector2(960, 540)
-texture = ExtResource("4_gyg6b")
 
 [node name="Cities" type="Node2D" parent="."]
 
@@ -60,5 +53,3 @@ max_spawn_radius = 500.0
 min_spawn_radius = 50.0
 
 [node name="Persons" type="Node2D" parent="."]
-
-[node name="AudioManager" parent="." instance=ExtResource("5_dc040")]
