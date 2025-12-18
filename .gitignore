@@ -17,3 +17,5 @@ mono_crash.*.json
 desktop.ini
 .vscode/
 .idea/
+
+*.lnk
