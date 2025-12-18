@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://urq03if3x0uq" path="res://assets/finals/barcelona_light.png" id="3_joggv"]
 
 [node name="City" type="Sprite2D"]
-scale = Vector2(0.204, 0.204)
+scale = Vector2(0.408, 0.408)
 texture = ExtResource("1_ny2ux")
 script = ExtResource("1_city")
 dark_texture = ExtResource("1_ny2ux")

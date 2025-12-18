@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 [ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
 [ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
@@ -40,6 +40,9 @@ min_spawn_radius = 25.0
 
 [node name="City5" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(970.0001, 65.999985)
+texture = ExtResource("8_p5fgu")
+dark_texture = ExtResource("8_p5fgu")
+light_texture = ExtResource("9_2tpxt")
 spawn_rate = 35.0
 spawn_variance = 6.0
 max_spawn_radius = 150.0
@@ -47,23 +50,23 @@ min_spawn_radius = 25.0
 
 [node name="City2" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(1742, 220)
-spawn_rate = 12.0
-spawn_variance = 2.0
 texture = ExtResource("6_3km4f")
 dark_texture = ExtResource("6_3km4f")
 light_texture = ExtResource("7_qkm1d")
+spawn_rate = 12.0
+spawn_variance = 2.0
 max_spawn_radius = 400.0
 min_spawn_radius = 25.0
 
 [node name="City3" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(883.99994, 1007)
+texture = ExtResource("8_p5fgu")
+dark_texture = ExtResource("8_p5fgu")
+light_texture = ExtResource("9_2tpxt")
 spawn_rate = 42.0
 spawn_variance = 10.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
-texture = ExtResource("8_p5fgu")
-dark_texture = ExtResource("8_p5fgu")
-light_texture = ExtResource("9_2tpxt")
 
 [node name="City6" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(1774.9998, 833.99994)
@@ -74,6 +77,9 @@ min_spawn_radius = 25.0
 
 [node name="City4" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(142, 917)
+texture = ExtResource("6_3km4f")
+dark_texture = ExtResource("6_3km4f")
+light_texture = ExtResource("7_qkm1d")
 spawn_rate = 22.0
 spawn_variance = 6.0
 max_spawn_radius = 150.0
