@@ -3,7 +3,7 @@
 concept
 Jerusalem sits at the middle of the world, engulfed in light
 the whole world is in the darkness
-other cities in the world, when in the darkness, rut, and create sad zombie people
+other cities in the world, when in the darkness, rot, and create sad zombie people
 the people move towards jerusalem to steal her light
 Jerusalem puts out beams of light the build slowly
 the beams of light stops people in their tracks and make them dance
@@ -45,11 +45,11 @@ Beam hit test (implemented):
 
 ## Cities (e.g., Amsterdam, Rome):
 Orbit screen edges (x, y positions).
-In darkness → rut builds → spawn Persons faster (rate scales with rut; TODO: full spawn logic, e.g., at cityGenRadius?).
-Its angle from the center is inside a Beam (checked with a small angular tolerance) → rut drops fast via cityCureRate.
+In darkness → rot builds → spawn Persons faster (rate scales with rot; TODO: full spawn logic, e.g., at cityGenRadius?).
+Its angle from the center is inside a Beam (checked with a small angular tolerance) → rot drops fast via cityCureRate.
 
 ## Persons (zombies/dancers):
-Spawn from rutty Cities.
+Spawn from rotty Cities.
 Dark state (outside Beams) → pulse-move toward Jerusalem every movePulseSpeed secs:
 Step walkDistance at direct angle + drunkness randomness (for wobbly paths).
 If they'd enter JerusalemRadius → steal lightSteal from lightBank instead.
@@ -60,7 +60,7 @@ Upgrades? lightBank likely boosts clickImpact.
 
 ## Win/Loss Loop:
 Goal: Flood world with light via expanding Beams → cure Cities → convert Persons → snowball lightBank → stronger Beams.
-Risk: Zombies reach Jerusalem → drain lightBank; unchecked rut = zombie hordes.
+Risk: Zombies reach Jerusalem → drain lightBank; unchecked rot = zombie hordes.
 Jerusalem starts with tiny innate light circle.
 
 
@@ -77,8 +77,8 @@ On Click Tick (from hold / auto-click):
 Tick (per frame/sec):
   shrink_all_beams(lightDecay)
   update_Persons()  # check Beam coverage → state changes, moves, light gen
-  update_cities()   # check Beam submersion → rut +/- 
-  spawn_Persons_from_rutty_cities()
+  update_cities()   # check Beam submersion → rot +/- 
+  spawn_Persons_from_rotty_cities()
 
 
 # data set
@@ -111,7 +111,7 @@ Tick (per frame/sec):
 `JerusalemRadius` - the distance at which **Person** steal light from it
 `clickPoint` - x,y of mouse click
 `cityGenRadius` - the distance range from the city at which the city generates **Person**
-`cityCureRate` - the rate at which cities cure from rut
+`cityCureRate` - the rate at which cities cure from rot
 `movePulseSpeed` - the rate of **Person** movement towards Jerusalem
 `walkDistance` - the distance the **Person** moves each time
 `drunkness` - the factor at which **Person** are deviating from walking in a straight line towards jerusalem
@@ -145,14 +145,14 @@ Tick (per frame/sec):
 
 **city**
 - has `name` : (Amsterdam, Rome, New York, Delhi etc.)
-- has `rut` level
+- has `rot` level
 - sits around the peripheral of the screen (`x`, `y`)
-- when in the dark, (NOT within any **Beam**) starts to increase in `rut`
-- when `rut` > 0, city generates **Person**
+- when in the dark, (NOT within any **Beam**) starts to increase in `rot`
+- when `rot` > 0, city generates **Person**
     - New Person spawns at a random position within `cityGenRadius` distance from the city
     - Starts with no velocity (movement is fully handled by the pulse system)"
-- the more `rut` the quicker the city generates **Person** (TODO: explain the system)
-- when the **city** is in the light (its angle from the center falls within one of the **Beam** ranges, checked using the city's x,y position and a small constant angular tolerance ± a few degrees (const `CITY_SIZE`) the `rut` drops rapidly by `cityCureRate` 
+- the more `rot` the quicker the city generates **Person** (TODO: explain the system)
+- when the **city** is in the light (its angle from the center falls within one of the **Beam** ranges, checked using the city's x,y position and a small constant angular tolerance ± a few degrees (const `CITY_SIZE`) the `rot` drops rapidly by `cityCureRate` 
 
 **Person**
 - has `STATE` (dark/light/happy)
