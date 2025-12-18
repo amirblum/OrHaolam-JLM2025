@@ -5,6 +5,9 @@ extends Node2D
 @export var clickImpact: float = 4.5 # Degrees, PRD `clickImpact`
 @export var minClickDist: float = 2.0 # Minimum distance from center to register a click
 @export var lightDecay: float = 5.0 # Deg/sec, PRD `lightDecay`
+@export var hold_enable: bool = false # Upgrade: allows click-and-hold repeating ticks
+@export var auto_click_rate: float = 12.0 # Clicks per second while holding / auto-clicking
+@export var auto_click: bool = false # If true, auto-click even when not holding
 
 const _MERGE_EPS_RAD := 0.00001
 
@@ -21,6 +24,10 @@ static func _unwrap_near(a: float, ref: float) -> float:
 # Accessible memory: keep references to currently-active beam instances.
 var beams: Array[Node2D] = []
 
+var _mouse_down := false
+var _space_down := false
+var _click_accum := 0.0
+
 func _ready() -> void:
 	# Ensure there is always a Beams container, even if the scene wasn't set up yet.
 	if beams_layer == null:
@@ -28,15 +35,48 @@ func _ready() -> void:
 		beams_layer.name = "Beams"
 		add_child(beams_layer)
 
+func _process(delta: float) -> void:
+	# Single click is always available (handled in _input).
+	# Repeated click ticks require either:
+	# - hold_enable + holding, or
+	# - auto_click (later upgrade) regardless of holding.
+	var holding_active := hold_enable and (_mouse_down or _space_down)
+	var active := auto_click or holding_active
+	if not active:
+		_click_accum = 0.0
+		return
+
+	if auto_click_rate <= 0.0:
+		return
+
+	var period := 1.0 / auto_click_rate
+	_click_accum += delta
+
+	while _click_accum >= period:
+		_click_accum -= period
+		_handle_click(get_global_mouse_position())
+
 func _input(event):
-	# Listen for mouse button click
+	# Listen for mouse button click/hold
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			_mouse_down = true
+			_click_accum = 0.0
 			_handle_click(get_global_mouse_position())
+		elif event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			_mouse_down = false
 	
-	# Listen for space bar press
+	# Listen for space bar press/hold (works like mouse click)
 	if event is InputEventKey:
-		if event.keycode == KEY_SPACE and event.pressed and not event.is_echo():
+		if event.keycode == KEY_SPACE and not event.is_echo():
+			if event.pressed:
+				_space_down = true
+			else:
+				_space_down = false
+
+			if event.pressed:
+				# Fire immediately on press; continuous repeats are handled in _process.
+				_click_accum = 0.0
 			_handle_click(get_global_mouse_position())
 
 func _handle_click(click_pos: Vector2) -> void:

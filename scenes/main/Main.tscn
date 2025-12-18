@@ -7,5 +7,9 @@
 script = ExtResource("1_main")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
+clickImpact = 2.0
+minClickDist = 4.0
+lightDecay = 7.0
+auto_click_rate = 6.0
 
 [node name="Beams" type="Node2D" parent="Player"]

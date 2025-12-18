@@ -13,20 +13,35 @@ when the light in the world is high enough, Jerusalem Beams increase in power
 until the whole world is engulfed in light
 
 an angle based tower defence clicker game
-all interaction is rapid clicking for light
+all interaction is mouse / SPACE click, click-and-hold, or auto click be mouse position for increasing light
+
+Input generates "click tick"
+If input is click and hold, and the power up `hold_enable` is true, generates repeated "click ticks" at a configurable rate (`auto_click_rate`).
+A powerup can enable `auto_click` so click ticks happen even when not holding.
 
 
 # Quick Summary of Core Mechanics:
 
 ## Player Input:
-Rapid clicks (mouse or SPACE + mouse) anywhere on screen → calculate clickPoint angle from Jerusalem center.
-Hit existing Beam: Expand it Expand it by exactly clickImpact degrees total, divided asymmetrically based on click position (biased toward the nearer edge; equal if perfectly centered).
-Miss all Beams (darkness): Spawn new Beam centered on click angle, sized by fixed clickImpact.
+Click to generate one click tick
+Hold (mouse LMB or SPACE) to generate repeated click ticks at `auto_click_rate` (upgradeable).
+Each click tick uses the current mouse position as the pointer → calculate clickPoint angle from Jerusalem center.
+Hold-enable powerup: allow auto clicking only if `hold_enable` is true
+Auto-click powerup: if `auto_click` is true, click ticks happen even without holding.
+
+Hit existing Beam: Expand it by exactly `clickImpact` degrees total per click tick, divided asymmetrically based on click position (biased toward the nearer edge; equal if perfectly centered).
+Miss all Beams (darkness): Spawn new Beam centered on click angle, sized by fixed `clickImpact`.
 
 ## Beams (light sectors):
-Defined by min/max angles (direction + width).
+Implemented as center angle + width (code uses radians). For design/math, treat it as `[min,max]` where `min = center - width/2`, `max = center + width/2` in an unwrapped angle space.
 Auto-shrink at lightDecay rate.
-Merge on overlap (combine into single Beam with overall min/max).
+Merge on touch or overlap (combine into single Beam with overall min/max).
+
+Note: Beams are expected to often cross 0°, so contains/merge checks must be done in an "unwrapped" angle space relative to the click / beam center.
+
+Beam hit test (implemented):
+- A click tick "hits" a Beam only if the pointer is within the Beam radius (`coneRadius`) AND within its angular span.
+- Click ticks too close to the center (within `minClickDist`) are ignored.
 
 ## Cities (e.g., Amsterdam, Rome):
 Orbit screen edges (x, y positions).
@@ -50,14 +65,14 @@ Jerusalem starts with tiny innate light circle.
 
 
 # Data Flow (High-Level Pseudocode for Clarity):
-textOn Click:
+On Click Tick (from hold / auto-click):
   angle = atan2(clickPoint.y - center.y, clickPoint.x - center.x)  # 0° up, etc.
   if in_beam = find_beam_containing(angle):
     bias = calc_tilt_percent(angle, in_beam.min, in_beam.max)
     expand_beam_asymmetrically(in_beam, clickImpact, bias) # e.g., more toward closer edge
   else:
     beams.append(new Beam(angle - impact/2, angle + impact/2))
-  merge_overlapping_beams()
+  merge_touching_or_overlapping_beams()
 
 Tick (per frame/sec):
   shrink_all_beams(lightDecay)
@@ -69,8 +84,11 @@ Tick (per frame/sec):
 # data set
 
 `Beams` - a list of **Beam** objects
-    - `min` angle
-    - `max` angle
+    - (implementation) `center` angle (`direction_rad`)
+    - (implementation) `width` (`angle_spread_rad`)
+    - (derived for math) `min` = center - width/2
+    - (derived for math) `max` = center + width/2
+    - `coneRadius` - how far the beam reaches from the center (radius)
 
 `Persons` - list of **Person** objects
     - `STATE`
@@ -85,6 +103,11 @@ Tick (per frame/sec):
 `lightDecay` - how fast a BEAM shrinks per second
 `lightBank` - how much light currency the player has
 
+`auto_click_rate` - click ticks per second while holding / auto-clicking
+`auto_click` - if true, click ticks happen without holding (powerup/upgrade hook)
+
+`minClickDist` - minimum distance from center for a click tick to register
+
 `JerusalemRadius` - the distance at which **Person** steal light from it
 `clickPoint` - x,y of mouse click
 `cityGenRadius` - the distance range from the city at which the city generates **Person**
@@ -96,21 +119,24 @@ Tick (per frame/sec):
 
 
 # interaction
-- Player presses screen (mouse click or SPACE + mouse as pointer)
-    - a `clickPoint` is calculated
-    -   if the `clickPoint` is within one of the **Beam** of light the **Beam** expands in size
-        - the `clickpoint` is checked against the **Beam**s `min` and `max`
-        - the **Beam** expands in relation to how close the click is to either min or max
-            - if the `clickPoint` is exactly at the middle between min and max, the **Beam** expands equally on both sides
-            - if the `clickPoint` is leaning towards the min or max the expansion is divided by the % of the leaning
-            - The total width of the Beam increases by exactly `clickImpact` degrees. This added width is divided between the two sides according to the bias percentage (closer to one edge = more expansion on that side)
-    -   if the press is in the darkness (NOT in any **Beam**) a new **Beam** is created 
+- Player clicks screen (mouse LMB or SPACE, mouse position is the pointer)
+    - one click tick is happens
+    - while held, if `hold_enable`, repeated click ticks occur at `auto_click_rate` (or continuously if `auto_click` is enabled)
+    - each click tick calculates a `clickPoint` (mouse position) and its angle from the center
+    - if the `clickPoint` hits an existing **Beam** (within radius + angular span), the **Beam** expands in size
+        - the click angle is evaluated against the Beam's derived `min` and `max` (in an unwrapped space)
+        - the Beam expands in relation to how close the click is to either min or max
+            - if the click is exactly in the middle, expansion is equal on both sides
+            - if the click is closer to one edge, expansion is biased toward that edge
+            - The total width of the Beam increases by exactly `clickImpact` degrees per click tick. This added width is divided between the two sides according to the bias percentage (closer to one edge = more expansion on that side)
+    - if the click tick is in the darkness (NOT in any **Beam**) a new **Beam** is created 
+    - after each click tick, all Beams are merged if any touch/overlap
 
 **Beam**
-- the **Beam** is angle based, and has `MIN` and `MAX` angles to state both direction and size
+- the **Beam** is angle-based, implemented as `center` + `width` (min/max derived)
 - When creating a new **Beam** in darkness, it is centered on the click angle with initial width exactly equal to `clickImpact` degrees.
-- if two **Beam** overlap they merge into one beam 
-- the **Beam** is expanding by `clickImpact` when clicked
+- if two **Beam** touch or overlap they merge into one beam 
+- the **Beam** is expanding by `clickImpact` each click tick when hit
 - the **Beam** shrinks at `lightDecay` speed constantly
 
 **Jerusalem**
@@ -140,4 +166,10 @@ Tick (per frame/sec):
 -- the **Person** moves a short `walkDistance` towards a random angle
 -- the random angle is the angle between the **Person** and Jerusalem + a random factor `drunkness`
 -- if a Person is to move into `JerusalemRadius` distance from Jerusalem, he does not move, `lightBank` is decreased by `lightSteal` instead
+
+---
+Implementation mapping (current repo):
+- `scenes/player/Player.gd`: owns the active Beams list, click tick loop (hold + `auto_click_rate`), hit-test selection, spawn, and merge-on-touch.
+- `scenes/cone/Cone.gd`: Beam geometry + drawing, shrink (`lightDecay`), hit-test helper, and biased expansion by `clickImpact`.
+- `scenes/main/Main.gd`: currently only handles quitting (Escape).
 
