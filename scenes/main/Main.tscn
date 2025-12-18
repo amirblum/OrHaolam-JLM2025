@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=10 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 [ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
 [ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
+[ext_resource type="Texture2D" uid="uid://byw7585wbx1xx" path="res://assets/finals/moscow_dark.png" id="6_3km4f"]
+[ext_resource type="Texture2D" uid="uid://bh0mhmaav0vpo" path="res://assets/finals/moscow_light.png" id="7_qkm1d"]
+[ext_resource type="Texture2D" uid="uid://cd6nadbf7vkjh" path="res://assets/finals/rome_dark.png" id="8_p5fgu"]
+[ext_resource type="Texture2D" uid="uid://bu21iplrivnd" path="res://assets/finals/rome_light.png" id="9_2tpxt"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -40,6 +44,9 @@ min_spawn_radius = 50.0
 
 [node name="City2" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(1742, 220)
+texture = ExtResource("6_3km4f")
+dark_texture = ExtResource("6_3km4f")
+light_texture = ExtResource("7_qkm1d")
 spawn_rate = 0.18
 spawn_rate_variance = 0.75
 max_spawn_radius = 400.0
@@ -47,6 +54,9 @@ min_spawn_radius = 50.0
 
 [node name="City3" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(868, 988)
+texture = ExtResource("8_p5fgu")
+dark_texture = ExtResource("8_p5fgu")
+light_texture = ExtResource("9_2tpxt")
 spawn_rate = 0.11
 spawn_rate_variance = 0.6
 max_spawn_radius = 240.0

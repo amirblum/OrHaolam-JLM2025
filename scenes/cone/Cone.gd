@@ -123,8 +123,8 @@ func _draw() -> void:
 		points.append(point)
 	
 	# 3. Draw the filled shape
-	# Pure white with some transparency for that "ghostly" cone look
-	var color = Color(1.0, 1.0, 1.0, 1)
+	# Color: faa77a
+	var color = Color.html("faa77a")
 	draw_polygon(points, PackedColorArray([color]))
 	
 	## 4. Draw a solid white outline for better definition
