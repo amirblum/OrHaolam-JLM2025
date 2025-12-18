@@ -166,14 +166,14 @@ func _input(event):
 	if event is InputEventKey:
 		if event.keycode == KEY_SPACE and not event.is_echo():
 			if event.pressed:
-				_space_down = true
+				_space_down = false
 			else:
 				_space_down = false
 
 			if event.pressed:
 				# Fire immediately on press; continuous repeats are handled in _process.
 				_click_accum = 0.0
-			_handle_click(get_global_mouse_position())
+			#_handle_click(get_global_mouse_position())
 
 func _handle_click(click_pos: Vector2) -> void:
 	# Check if there's enough light in the bank to perform the click
