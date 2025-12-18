@@ -18,9 +18,16 @@ auto_click_rate = 6.0
 
 [node name="Cities" type="Node2D" parent="."]
 
-[node name="TestCity" parent="Cities" instance=ExtResource("3_city")]
-position = Vector2(400, 300)
+[node name="City1" parent="Cities" instance=ExtResource("3_city")]
+position = Vector2(400, 301)
 spawn_rate = 0.25
-cityGenRadius = 100.0
+
+[node name="City2" parent="Cities" instance=ExtResource("3_city")]
+position = Vector2(1443, 300)
+spawn_rate = 0.25
+
+[node name="City3" parent="Cities" instance=ExtResource("3_city")]
+position = Vector2(939, 927)
+spawn_rate = 0.25
 
 [node name="Persons" type="Node2D" parent="."]
