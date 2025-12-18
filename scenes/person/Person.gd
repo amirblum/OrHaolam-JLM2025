@@ -2,10 +2,12 @@ extends Node2D
 class_name Person
 
 # Movement configuration (PRD parameters)
-@export var move_pulse_speed: float = 0.5 # Seconds between movement pulses, PRD `movePulseSpeed`
+@export var move_pulse_speed: float = 1.5 # Seconds between movement pulses, PRD `movePulseSpeed`
 @export var walk_distance: float = 20.0 # Distance moved per pulse, PRD `walkDistance`
 @export var drunkness: float = 0.3 # Random angle offset factor (radians), PRD `drunkness`
 @export var lightSteal: float = 10.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
+@export var PersonRadius: float = 10.0
+
 
 # Internal state
 var _pulse_accum := 0.0
@@ -47,7 +49,7 @@ func _attempt_movement_pulse() -> void:
 	var distance_to_center := to_center.length()
 	
 	# If already within JerusalemRadius, trigger light stealing and don't move
-	if _player_node != null and distance_to_center <= _player_node.JerusalemRadius:
+	if _player_node != null and distance_to_center <= _player_node.player_radius:
 		_steal_light()
 		return
 	
@@ -66,7 +68,7 @@ func _attempt_movement_pulse() -> void:
 	var new_to_center := screen_center - new_position
 	var new_distance := new_to_center.length()
 	
-	if _player_node != null and new_distance <= _player_node.JerusalemRadius:
+	if _player_node != null and new_distance <= _player_node.player_radius:
 		# Would enter JerusalemRadius - trigger light stealing instead of moving
 		_steal_light()
 		return

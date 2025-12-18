@@ -9,6 +9,7 @@ signal person_spawned(person: Node2D)
 
 # Export variables for configuration
 @export var spawn_rate: float = 1.0  # persons per second
+@export var spawn_rate_variance: float = 0.05  # random offset range (-x to x) for time until next spawn
 @export var max_spawn_radius: float = 50.0  # maximum spawn radius from city
 @export var min_spawn_radius: float = 10.0  # minimum spawn radius from city
 @export var city_name: String = "City"  # city name 
@@ -26,6 +27,9 @@ func _process(delta: float) -> void:
 	while _spawn_accum >= period:
 		_spawn_accum -= period
 		_spawn_person()
+		# Add random variance to the time until next spawn
+		var variance_offset := randf_range(-spawn_rate_variance, spawn_rate_variance)
+		_spawn_accum += variance_offset
 
 func _spawn_person() -> void:
 	# Instantiate Person scene

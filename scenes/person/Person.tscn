@@ -4,6 +4,7 @@
 
 [node name="Person" type="Node2D"]
 script = ExtResource("1_person")
+drunkness = 1.0
 
 [node name="Visual" type="ColorRect" parent="."]
 anchors_preset = 8
