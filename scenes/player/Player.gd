@@ -10,7 +10,10 @@ extends Node2D
 @export var auto_click: bool = false # If true, auto-click even when not holding
 @export var player_radius: float = 50.0 # Distance at which Persons steal light from Jerusalem, PRD `player_radius`
 @export var lightBank: float = 100.0 # Light currency, PRD `lightBank`
-
+@export var light_bank_radius: float = 80.0 # Radius of the light bank visual indicator
+@export var rim: float = 10.0 # Rim width for the light bank visual indicator
+@export var fill_rate: float = 0.5 # fill rate for the light tank
+@export var light_cost: float = 10; # cost to spawn a person
 const _MERGE_EPS_RAD := 0.00001
 
 static func _unwrap_near(a: float, ref: float) -> float:
@@ -29,11 +32,42 @@ static func _unwrap_near(a: float, ref: float) -> float:
 # Accessible memory: keep references to currently-active beam instances.
 var beams: Array[Node2D] = []
 
+# Reference to the light bank visual node
+var light_bank_node: Node2D = null
+
 var _mouse_down := false
 var _space_down := false
 var _click_accum := 0.0
+var time_accum: = 0.0
 
 func _ready() -> void:
+	# Create the light bank visual indicator
+	light_bank_node = Node2D.new()
+	light_bank_node.name = "lightBank"
+	add_child(light_bank_node)
+	
+	# Position at the center of the screen
+	var screen_center := get_viewport_rect().size / 2
+	light_bank_node.global_position = screen_center
+	
+	# Set up the light bank drawing
+	light_bank_node.draw.connect(func():
+		# 1. Draw outer white rim circle
+		light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius + rim, Color.WHITE)
+		
+		# 2. Draw the base grey inner circle (empty state)
+		light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius, Color.DIM_GRAY)
+		
+		# 3. Calculate fill height based on lightBank percentage
+		var fill_percent := clampf(lightBank / 100.0, 0.0, 1.0)
+		
+		# 4. Draw the white fill polygon representing the filled portion
+		var points := _get_circle_fill_polygon(light_bank_radius, fill_percent)
+		if points.size() > 0:
+			light_bank_node.draw_colored_polygon(points, Color.WHITE)
+	)
+	light_bank_node.queue_redraw()
+	
 	# Ensure there is always a Beams container, even if the scene wasn't set up yet.
 	if beams_layer == null:
 		beams_layer = Node2D.new()
@@ -42,7 +76,6 @@ func _ready() -> void:
 	
 	# Position Jerusalem sprite at the screen center (where beams originate)
 	if jerusalem != null:
-		var screen_center := get_viewport_rect().size / 2
 		jerusalem.position = to_local(screen_center)
 	
 	queue_redraw()
@@ -53,7 +86,52 @@ func _draw() -> void:
 	var local_center := to_local(screen_center)
 	draw_circle(local_center, player_radius, Color(1.0, 1.0, 1.0, 0.2))
 
+func _get_circle_fill_polygon(radius: float, fill_percent: float) -> PackedVector2Array:
+	"""Generate polygon points that fill a circle from bottom to given percentage"""
+	if fill_percent <= 0.0:
+		return PackedVector2Array()
+	
+	var points := PackedVector2Array()
+	var segments := 32
+	
+	# Calculate the Y position of the fill line (0 is center)
+	# Bottom of circle is at Y = +radius, top is at Y = -radius
+	var fill_y := radius - (radius * 2 * fill_percent)
+	
+	if fill_percent >= 1.0:
+		# Fully filled - just return a circle approximation
+		for i in range(segments):
+			var angle := (float(i) / segments) * TAU
+			points.append(Vector2(cos(angle) * radius, sin(angle) * radius))
+		return points
+	
+	# Calculate where the fill line intersects the circle
+	# Circle equation: x² + y² = r²
+	# Build the polygon:
+	# Start from left intersection point, go down along arc to bottom,
+	# continue along arc to right intersection point, then line back
+	var start_angle := asin(fill_y / radius) # Left intersection angle
+	var end_angle := PI - start_angle # Right intersection angle
+	
+	# Add points along the arc from left to right (going through bottom)
+	for i in range(segments + 1):
+		var t := float(i) / segments
+		var angle := start_angle + (end_angle - start_angle) * t
+		points.append(Vector2(cos(angle) * radius, sin(angle) * radius))
+	
+	return points
+
 func _process(delta: float) -> void:
+	
+	time_accum += delta
+	# Fill the light tank over time based on fill_rate
+	if fill_rate > 0.0 and lightBank < 100.0:
+		var old_bank := lightBank
+		lightBank = minf(100.0, lightBank + fill_rate * delta)
+		# Redraw if the value changed
+		if lightBank != old_bank and light_bank_node:
+			light_bank_node.queue_redraw()
+	
 	# Single click is always available (handled in _input).
 	# Repeated click ticks require either:
 	# - hold_enable + holding, or
@@ -98,11 +176,22 @@ func _input(event):
 			_handle_click(get_global_mouse_position())
 
 func _handle_click(click_pos: Vector2) -> void:
+	# Check if there's enough light in the bank to perform the click
+	if lightBank < light_cost:
+		return
+	
 	# Origin is the center of the screen as per requirements (Jerusalem).
 	var screen_center := get_viewport_rect().size / 2
 	var v := click_pos - screen_center
 	if v.length() < minClickDist:
 		return
+	
+	# Deduct light cost from the light bank
+	var old_bank := lightBank
+	lightBank = maxf(0.0, lightBank - light_cost)
+	# Trigger redraw if the value changed
+	if lightBank != old_bank and light_bank_node:
+		light_bank_node.queue_redraw()
 
 	var click_angle := v.angle()
 
@@ -221,6 +310,9 @@ func get_beams() -> Array[Node2D]:
 
 func decrease_light_bank(amount: float) -> void:
 	lightBank = maxf(0.0, lightBank - amount)
+	# Trigger redraw of the light bank indicator
+	if light_bank_node:
+		light_bank_node.queue_redraw()
 
 func light_state(point: Vector2, radius: float) -> float:
 	"""

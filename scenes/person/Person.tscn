@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://xve2lw4ry5xj" path="res://assets/mockups/person_light.png" id="3_d5yk4"]
 
 [node name="Person" type="Sprite2D"]
+scale = Vector2(0.4, 0.4)
 texture = ExtResource("2_8slcl")
 script = ExtResource("1_person")
 drunkness = 1.0
