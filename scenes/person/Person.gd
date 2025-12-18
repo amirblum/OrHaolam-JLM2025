@@ -5,7 +5,7 @@ class_name Person
 @export var move_pulse_speed: float = 1. # Seconds between movement pulses, PRD `movePulseSpeed`
 @export var move_pulse_speed_variance: float = 0.5 # Variance in movement pulse speed, PRD `movePulseSpeedVariance`
 @export var walk_distance: float = 9.0 # Distance moved per pulse, PRD `walkDistance`
-@export var drunkness: float = 0.45 # Random angle offset factor (radians), PRD `drunkness`
+@export var drunkness: float = 1.5 # Random angle offset factor (radians), PRD `drunkness`
 @export var lightSteal: float = 30.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
 @export var PersonRadius: float = 5.0
 @export var happy_time: float = 0.0 # Time in light before a Person becomes happy

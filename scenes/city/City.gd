@@ -12,8 +12,8 @@ signal person_spawned(person: Node2D)
 @export var light_texture: Texture2D
 
 # Export variables for configuration
-@export var spawn_rate: float = 1.0  # persons per second
-@export var spawn_rate_variance: float = 0.05  # random offset range (-x to x) for time until next spawn
+@export var spawn_rate: float   # persons per second
+@export var spawn_variance: float = 0.05  # random offset range (-x to x) for time until next spawn
 @export var max_spawn_radius: float = 50.0  # maximum spawn radius from city
 @export var min_spawn_radius: float = 10.0  # minimum spawn radius from city
 @export var city_name: String = "City"  # city name 
@@ -21,6 +21,7 @@ signal person_spawned(person: Node2D)
 
 # Timer accumulator for spawn rate
 var _spawn_accum := 0.0
+var period := spawn_rate
 
 # Light state: 0.0 (dark), 0.5 (partial), 1.0 (fully lit)
 var light_state: float = 0.0
@@ -29,6 +30,7 @@ var light_state: float = 0.0
 var _player: Node2D = null
 
 func _ready() -> void:
+	period = spawn_rate
 	# Get reference to the player node
 	_player = get_node_or_null("/root/Main/Player")
 	if _player == null:
@@ -54,19 +56,14 @@ func _process(delta: float) -> void:
 		# Dark or partially lit - use dark texture
 		texture = dark_texture
 	
-	if spawn_rate <= 0.0:
-		return
-	
-	var period := 1.0 / spawn_rate
-	if light_state < 1.0:
+	if light_state >= 0:
 		_spawn_accum += delta
 	
-	while _spawn_accum >= period:
-		_spawn_accum -= period
+	if _spawn_accum >= period:
+		_spawn_accum = 0
+		period = spawn_rate + randf_range(-spawn_variance, spawn_variance)
 		_spawn_person()
-		# Add random variance to the time until next spawn
-		var variance_offset := randf_range(-spawn_rate_variance, spawn_rate_variance)
-		_spawn_accum += variance_offset
+		
 
 func _spawn_person() -> void:
 	# Instantiate Person scene
