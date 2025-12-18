@@ -11,7 +11,7 @@ DEBUG = true
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
 minClickDist = 4.0
-lightDecay = 2.2
+lightDecay = 2.0
 hold_enable = true
 auto_click_rate = 6.0
 lightBank = 0.0
