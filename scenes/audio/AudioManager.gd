@@ -57,9 +57,32 @@ func set_percentage(new_percentage: float) -> void:
 	_update_tracks()
 
 func _update_tracks() -> void:
-	# Track 0 always has full volume (threshold 0.0)
+	# Track 0 volume decreases logarithmically from 100% to 0% after reaching middle threshold
 	if _audio_players.size() > 0:
-		_audio_players[0].volume_db = 0.0
+		# Calculate middle threshold (50% or threshold of middle track)
+		var middle_threshold: float = 50.0
+		if _track_thresholds.size() > 0:
+			var middle_index := int(_track_thresholds.size() / 2.0)
+			if middle_index < _track_thresholds.size():
+				middle_threshold = _track_thresholds[middle_index]
+		
+		if percentage < middle_threshold:
+			# Before middle - keep at full volume
+			_audio_players[0].volume_db = 0.0
+		else:
+			# After middle - fade out logarithmically
+			# Map percentage from [middle_threshold, 100] to [0.0, 1.0]
+			var fade_range: float = 100.0 - middle_threshold
+			if fade_range > 0.0:
+				var fade_factor: float = (percentage - middle_threshold) / fade_range  # 0.0 to 1.0
+				# Logarithmic fade: convert linear factor to logarithmic decibel fade
+				# Use logarithmic curve for smooth perceived volume fade
+				var linear_volume: float = 1.0 - fade_factor  # 1.0 to 0.0
+				# Clamp to avoid log(0) and convert to decibels
+				linear_volume = max(linear_volume, 0.0001)  # Minimum to avoid log(0)
+				_audio_players[0].volume_db = 20.0 * log(linear_volume) / log(10.0)  # log10 conversion
+			else:
+				_audio_players[0].volume_db = -80.0
 	
 	# Update other tracks based on thresholds - control volume instead of play/stop
 	for i in range(1, _audio_players.size()):
