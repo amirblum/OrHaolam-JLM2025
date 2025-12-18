@@ -7,3 +7,5 @@
 script = ExtResource("1_main")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="Beams" type="Node2D" parent="Player"]

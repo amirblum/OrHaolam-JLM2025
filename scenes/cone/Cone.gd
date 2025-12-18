@@ -1,15 +1,68 @@
 extends Node2D
+class_name Cone
 
 # Internal variables for the cone's appearance and life
-var radius: float = 200.0
+var radius: float = 50
 var angle_spread_rad: float = PI / 4.0
 var direction_rad: float = 0.0
 var duration: float = 2.0
-var timer: float = 0.0
+
+# When the cone "expires", it shrinks its angle over time instead of disappearing.
+# `duration` is treated as a shrink rate in degrees per second.
+const _MIN_ANGLE_RAD := 0.0001
+const _ANGLE_EPS_RAD := 0.00001
+
+static func unwrap_near(a: float, ref: float) -> float:
+	# Return an equivalent angle to `a` that is closest to `ref`.
+	# This makes comparisons robust when beams cross 0 / TAU.
+	return ref + wrapf(a - ref, -PI, PI)
+
+func contains_click(center: Vector2, click_pos: Vector2) -> bool:
+	var v := click_pos - center
+	if v.length() > radius:
+		return false
+	if angle_spread_rad <= 0.0:
+		return false
+
+	var a := v.angle()
+	var a_u := unwrap_near(a, direction_rad)
+	var half := angle_spread_rad * 0.5
+	return absf(a_u - direction_rad) <= half + _ANGLE_EPS_RAD
+
+func apply_click_growth(click_angle: float, click_impact_deg: float) -> void:
+	# Expand the beam by exactly `click_impact_deg` total (PRD `clickImpact`),
+	# split asymmetrically toward the nearer edge of the cone.
+	if click_impact_deg <= 0.0:
+		return
+
+	var impact := deg_to_rad(click_impact_deg)
+	var half := angle_spread_rad * 0.5
+	var min_edge := direction_rad - half
+	var max_edge := direction_rad + half
+
+	var a_u := unwrap_near(click_angle, direction_rad)
+	var denom := max_edge - min_edge
+	var t := 0.5
+	if denom > _MIN_ANGLE_RAD:
+		# Normalized click position across [min_edge, max_edge].
+		t = clampf((a_u - min_edge) / denom, 0.0, 1.0)
+
+	# Split the added width exactly as PRD describes:
+	# - Closer to min -> more expansion on min side (min decreases more)
+	# - Closer to max -> more expansion on max side (max increases more)
+	var expand_min := impact * (1.0 - t)
+	var expand_max := impact * t
+
+	var new_min := min_edge - expand_min
+	var new_max := max_edge + expand_max
+
+	direction_rad = wrapf((new_min + new_max) * 0.5, -PI, PI)
+	angle_spread_rad = new_max - new_min
+	queue_redraw()
 
 # Initialize the cone properties from the player
 func setup(p_direction: float, p_radius: float, p_angle_deg: float, p_duration: float) -> void:
-	direction_rad = p_direction
+	direction_rad = wrapf(p_direction, -PI, PI)
 	radius = p_radius
 	angle_spread_rad = deg_to_rad(p_angle_deg)
 	duration = p_duration
@@ -18,10 +71,15 @@ func setup(p_direction: float, p_radius: float, p_angle_deg: float, p_duration: 
 	queue_redraw()
 
 func _process(delta: float) -> void:
-	timer += delta
-	
-	# Once the duration is exceeded, remove the cone
-	if timer >= duration:
+	# Shrink the cone's angle by `duration` degrees per second.
+	if duration <= 0.0:
+		queue_free()
+		return
+
+	angle_spread_rad = maxf(0.0, angle_spread_rad - deg_to_rad(duration) * delta)
+	queue_redraw()
+
+	if angle_spread_rad <= _MIN_ANGLE_RAD:
 		queue_free()
 
 func _draw() -> void:
@@ -47,8 +105,8 @@ func _draw() -> void:
 	
 	# 3. Draw the filled shape
 	# Pure white with some transparency for that "ghostly" cone look
-	var color = Color(1.0, 1.0, 1.0, 0.5)
+	var color = Color(1.0, 1.0, 1.0, 1)
 	draw_polygon(points, PackedColorArray([color]))
 	
-	# 4. Draw a solid white outline for better definition
-	draw_polyline(points, Color(1.0, 1.0, 1.0, 1.0), 2.0, true)
+	## 4. Draw a solid white outline for better definition
+	# draw_polyline(points, Color(1.0, 1.0, 1.0, 1.0), 2.0, true)
