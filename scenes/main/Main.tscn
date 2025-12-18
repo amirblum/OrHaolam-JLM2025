@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 
 [node name="Main" type="Node2D"]
@@ -9,6 +9,7 @@ script = ExtResource("1_main")
 DEBUG = true
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(984, 509)
 clickImpact = 1.0
 minClickDist = 4.0
 lightDecay = 2.5
