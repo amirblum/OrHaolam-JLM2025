@@ -1,8 +1,8 @@
 extends Node2D
 
-@export var light_decay_step: float = 0.5
-@export var click_impact_step: float = 0.5
-@export var auto_click_rate_step: float = 1.0
+@export var light_decay_step: float = 0.1
+@export var click_impact_step: float = 0.1
+@export var auto_click_rate_step: float = 0.5
 
 var player: Node = null
 

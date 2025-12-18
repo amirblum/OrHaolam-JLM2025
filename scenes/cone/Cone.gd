@@ -5,7 +5,7 @@ class_name Cone
 var radius: float = 50
 var angle_spread_rad: float = PI / 4.0
 var direction_rad: float = 0.0
-var duration: float = 2.0
+var duration: float = 2.0 # fallback decay rate (deg/sec) if no master is found
 
 # When the cone "expires", it shrinks its angle over time instead of disappearing.
 # `duration` is treated as a shrink rate in degrees per second.
@@ -70,13 +70,32 @@ func setup(p_direction: float, p_radius: float, p_angle_deg: float, p_duration: 
 	# Trigger a redraw immediately after setup
 	queue_redraw()
 
+func _get_master_light_decay_deg() -> float:
+	# Cones are instanced under Player/Beams, so Player is the parent of our parent.
+	# If that structure changes, we fall back to our local `duration`.
+	var beams_parent := get_parent()
+	if beams_parent == null:
+		return duration
+	var player := beams_parent.get_parent()
+	if player == null:
+		return duration
+	if not is_instance_valid(player):
+		return duration
+
+	# `Player.gd` exposes `lightDecay` (deg/sec).
+	var v: Variant = player.get("lightDecay")
+	if typeof(v) == TYPE_INT or typeof(v) == TYPE_FLOAT:
+		return float(v)
+	return duration
+
 func _process(delta: float) -> void:
-	# Shrink the cone's angle by `duration` degrees per second.
-	if duration <= 0.0:
-		queue_free()
+	# Shrink the cone's angle by master `lightDecay` (deg/sec).
+	# This allows debug/upgrades to affect all existing cones.
+	var decay_deg := _get_master_light_decay_deg()
+	if decay_deg <= 0.0:
 		return
 
-	angle_spread_rad = maxf(0.0, angle_spread_rad - deg_to_rad(duration) * delta)
+	angle_spread_rad = maxf(0.0, angle_spread_rad - deg_to_rad(decay_deg) * delta)
 	queue_redraw()
 
 	if angle_spread_rad <= _MIN_ANGLE_RAD:

@@ -1,7 +1,7 @@
 extends Node2D
 
 # Constants for cone behavior
-@export var coneRadius: float = 960.0
+@export var coneRadius: float = 1200.0
 @export var clickImpact: float = 4.5 # Degrees, PRD `clickImpact`
 @export var minClickDist: float = 2.0 # Minimum distance from center to register a click
 @export var lightDecay: float = 5.0 # Deg/sec, PRD `lightDecay`
