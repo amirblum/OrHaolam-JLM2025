@@ -200,3 +200,85 @@ func _merge_beams(ref_angle: float) -> void:
 
 func get_beams() -> Array[Node2D]:
 	return beams
+
+func light_state(point: Vector2, radius: float) -> float:
+	"""
+	Determines the light state of a circular region.
+	
+	Args:
+		point: The center point of the circle in global coordinates
+		radius: The radius of the circle in pixels
+	
+	Returns:
+		0.0 - None of the sample angles are in any beam
+		0.5 - Some angles are in beams OR angles are in different beams
+		1.0 - All three angles are in the same beam
+	"""
+	# Get the screen center (Jerusalem origin)
+	var screen_center := get_viewport_rect().size / 2
+	
+	# Calculate vector from screen center to the point
+	var v := point - screen_center
+	var distance := v.length()
+	
+	# Calculate the three angles
+	var center_angle := v.angle()
+	
+	# Calculate angular offset for the circle edges
+	# tan(theta) = radius / distance, so theta = atan(radius / distance)
+	var angular_offset := atan2(radius, distance) if distance > 0.0 else 0.0
+	
+	var min_angle := center_angle - angular_offset
+	var max_angle := center_angle + angular_offset
+	
+	# Find which beam (if any) contains each angle
+	var center_beam := _find_beam_containing_angle(center_angle)
+	var min_beam := _find_beam_containing_angle(min_angle)
+	var max_beam := _find_beam_containing_angle(max_angle)
+	
+	# Count how many angles are in beams
+	var in_beam_count := 0
+	if center_beam != null:
+		in_beam_count += 1
+	if min_beam != null:
+		in_beam_count += 1
+	if max_beam != null:
+		in_beam_count += 1
+	
+	# Case 1: None in any beam
+	if in_beam_count == 0:
+		return 0.0
+	
+	# Case 2: All three in the same beam
+	if in_beam_count == 3 and center_beam == min_beam and min_beam == max_beam:
+		return 1.0
+	
+	# Case 3: Some in beams or in different beams
+	return 0.5
+
+func _find_beam_containing_angle(angle: float) -> Node2D:
+	"""
+	Finds the beam that contains the given angle.
+	
+	Args:
+		angle: The angle to check (in radians)
+	
+	Returns:
+		The beam Node2D that contains this angle, or null if none
+	"""
+	for b in beams:
+		if b == null or not is_instance_valid(b):
+			continue
+		
+		var dir := float(b.get("direction_rad"))
+		var spread := float(b.get("angle_spread_rad"))
+		var half_spread := spread * 0.5
+		
+		# Unwrap the test angle near the beam's direction to handle wraparound
+		var angle_unwrapped := _unwrap_near(angle, dir)
+		
+		# Check if angle is within the beam's range
+		if angle_unwrapped >= (dir - half_spread) and angle_unwrapped <= (dir + half_spread):
+			return b
+	
+	return null

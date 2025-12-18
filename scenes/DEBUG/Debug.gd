@@ -56,6 +56,8 @@ func _input(event: InputEvent) -> void:
 			_add_float(&"auto_click_rate", -auto_click_rate_step, 0.1)
 		KEY_D:
 			_add_float(&"auto_click_rate", auto_click_rate_step, 0.1)
+		KEY_T:
+			_spawn_test_circle()
 		_:
 			return
 
@@ -117,3 +119,59 @@ func _find_player() -> Node:
 			return any
 
 	return null
+
+func _spawn_test_circle() -> void:
+	if player == null or not is_instance_valid(player):
+		return
+	
+	var viewport_size := get_viewport_rect().size
+	var random_x := randf_range(0, viewport_size.x)
+	var random_y := randf_range(0, viewport_size.y)
+	var random_radius := randf_range(5.0, 100.0)
+	
+	var test_circle := TestCircle.new()
+	test_circle.position = Vector2(random_x, random_y)
+	test_circle.radius = random_radius
+	test_circle.player = player
+	
+	add_child(test_circle)
+
+
+# TestCircle node that checks its light state and draws itself
+class TestCircle extends Node2D:
+	var radius: float = 10.0
+	var player: Node = null
+	
+	func _ready() -> void:
+		set_process(true)
+	
+	func _process(_delta: float) -> void:
+		queue_redraw()
+	
+	func _draw() -> void:
+		if player == null or not is_instance_valid(player):
+			return
+		
+		if not player.has_method("light_state"):
+			return
+		
+		# Check light state at this circle's position
+		var light_value: float = player.light_state(global_position, radius)
+		
+		# Determine color based on light state
+		var color: Color
+		if light_value == 0.0:
+			# Fully dark - grey
+			color = Color(0.3, 0.3, 0.3, 0.8)
+		elif light_value == 1.0:
+			# Fully light - white
+			color = Color(1.0, 1.0, 1.0, 0.8)
+		else:
+			# Partial light (0.5) - something in between
+			color = Color(0.65, 0.65, 0.65, 0.8)
+		
+		# Draw the circle
+		draw_circle(Vector2.ZERO, radius, color)
+		
+		# Draw outline for visibility
+		draw_arc(Vector2.ZERO, radius, 0, TAU, 32, Color.BLACK, 2.0)
