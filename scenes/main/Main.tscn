@@ -31,13 +31,13 @@ light_cost = 2.2
 position = Vector2(103.99999, 84.999985)
 spawn_rate = 12.0
 spawn_variance = 2.0
-max_spawn_radius = 150.0
+max_spawn_radius = 400.0
 min_spawn_radius = 25.0
 
 [node name="City5" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(970.0001, 65.999985)
-spawn_rate = 26.0
-spawn_variance = 4.0
+spawn_rate = 35.0
+spawn_variance = 6.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
 
@@ -45,13 +45,13 @@ min_spawn_radius = 25.0
 position = Vector2(1742, 220)
 spawn_rate = 12.0
 spawn_variance = 2.0
-max_spawn_radius = 300.0
+max_spawn_radius = 400.0
 min_spawn_radius = 25.0
 
 [node name="City3" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(883.99994, 1007)
-spawn_rate = 27.0
-spawn_variance = 6.0
+spawn_rate = 42.0
+spawn_variance = 10.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
 
@@ -64,7 +64,7 @@ min_spawn_radius = 25.0
 
 [node name="City4" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(142, 917)
-spawn_rate = 17.0
+spawn_rate = 22.0
 spawn_variance = 6.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0

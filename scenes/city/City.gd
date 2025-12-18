@@ -30,7 +30,7 @@ var light_state: float = 0.0
 var _player: Node2D = null
 
 func _ready() -> void:
-	period = spawn_rate
+	period = spawn_rate/3
 	# Get reference to the player node
 	_player = get_node_or_null("/root/Main/Player")
 	if _player == null:
