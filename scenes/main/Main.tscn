@@ -49,7 +49,7 @@ min_spawn_radius = 50.0
 position = Vector2(868, 988)
 spawn_rate = 0.11
 spawn_rate_variance = 0.6
-max_spawn_radius = 300.0
+max_spawn_radius = 240.0
 min_spawn_radius = 50.0
 
 [node name="City4" parent="Cities" instance=ExtResource("3_city")]
