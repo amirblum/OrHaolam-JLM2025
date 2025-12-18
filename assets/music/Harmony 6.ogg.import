@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://1j7lr8xh5ccj"
+path="res://.godot/imported/Harmony 6.ogg-4b8adf19027ccbec27581ba693380552.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Harmony 6.ogg"
+dest_files=["res://.godot/imported/Harmony 6.ogg-4b8adf19027ccbec27581ba693380552.oggvorbisstr"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4

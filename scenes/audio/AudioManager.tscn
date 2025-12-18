@@ -1,0 +1,18 @@
+[gd_scene load_steps=13 format=3 uid="uid://dwoysonwd30mj"]
+
+[ext_resource type="Script" uid="uid://rqup3qn204jg" path="res://scenes/audio/AudioManager.gd" id="1_audio_manager"]
+[ext_resource type="AudioStream" uid="uid://kvoejfgnm252" path="res://assets/music/Bass Drone.ogg" id="2_nxkdp"]
+[ext_resource type="AudioStream" uid="uid://cep111jmp7dk0" path="res://assets/music/Harmony 1.ogg" id="3_r174t"]
+[ext_resource type="AudioStream" uid="uid://5g3a0eg8n7ad" path="res://assets/music/Harmony 2.ogg" id="4_g1n41"]
+[ext_resource type="AudioStream" uid="uid://dfo3bdcav3dsn" path="res://assets/music/Harmony 3.ogg" id="5_7speq"]
+[ext_resource type="AudioStream" uid="uid://bypf7yyqqesuw" path="res://assets/music/Harmony 4.ogg" id="6_ah1rr"]
+[ext_resource type="AudioStream" uid="uid://l5aovdrw88ji" path="res://assets/music/Drums.ogg" id="7_exrf6"]
+[ext_resource type="AudioStream" uid="uid://pm5bo8jnwubs" path="res://assets/music/Harmony 5.ogg" id="8_hhuud"]
+[ext_resource type="AudioStream" uid="uid://1j7lr8xh5ccj" path="res://assets/music/Harmony 6.ogg" id="9_p71v7"]
+[ext_resource type="AudioStream" uid="uid://bp1dqg1uof4s" path="res://assets/music/Harmony 7.ogg" id="10_digtg"]
+[ext_resource type="AudioStream" uid="uid://befk5gkfawwpg" path="res://assets/music/Melody.ogg" id="11_ymfr7"]
+[ext_resource type="AudioStream" uid="uid://ccmi73nkx4ly" path="res://assets/music/Melody 2.ogg" id="12_h2t8c"]
+
+[node name="AudioManager" type="Node"]
+script = ExtResource("1_audio_manager")
+tracks = Array[AudioStream]([ExtResource("2_nxkdp"), ExtResource("3_r174t"), ExtResource("4_g1n41"), ExtResource("5_7speq"), ExtResource("6_ah1rr"), ExtResource("7_exrf6"), ExtResource("8_hhuud"), ExtResource("9_p71v7"), ExtResource("10_digtg"), ExtResource("11_ymfr7"), ExtResource("12_h2t8c")])

@@ -2,11 +2,15 @@ extends Sprite2D
 class_name Person
 
 # Movement configuration (PRD parameters)
-@export var move_pulse_speed: float = 1.5 # Seconds between movement pulses, PRD `movePulseSpeed`
-@export var walk_distance: float = 15.0 # Distance moved per pulse, PRD `walkDistance`
-@export var drunkness: float = 0.4 # Random angle offset factor (radians), PRD `drunkness`
-@export var lightSteal: float = 10.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
-@export var PersonRadius: float = 10.0
+@export var move_pulse_speed: float = 1. # Seconds between movement pulses, PRD `movePulseSpeed`
+@export var move_pulse_speed_variance: float = 0.5 # Variance in movement pulse speed, PRD `movePulseSpeedVariance`
+@export var walk_distance: float = 9.0 # Distance moved per pulse, PRD `walkDistance`
+@export var drunkness: float = 0.45 # Random angle offset factor (radians), PRD `drunkness`
+@export var lightSteal: float = 30.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
+@export var PersonRadius: float = 5.0
+@export var happy_time: float = 0.0 # Time in light before a Person becomes happy
+@export var dancing: bool = false # If true, the Person is dancing
+@export var dancing_light: float = 14.0 # Light added to lightBank per second by each happy Person
 
 # Texture resources for dark and light states
 @export var dark_texture: Texture2D
@@ -14,8 +18,10 @@ class_name Person
 
 # Internal state
 var _pulse_accum := 0.0
+var _happy_accum := 0.0
 var _player_node: Node2D = null
 var state: float = 0.0 # Light state: 0.0 = dark, 0.5 = partial, 1.0 = engulfed
+var period := move_pulse_speed + randf_range(-move_pulse_speed_variance, move_pulse_speed_variance)
 
 func _ready() -> void:
 	# Get reference to the player node
@@ -26,6 +32,7 @@ func _ready() -> void:
 	texture = dark_texture
 
 func _process(delta: float) -> void:
+	
 	# Update light state from player's light_state method
 	if _player_node != null and _player_node.has_method("light_state"):
 		state = _player_node.call("light_state", global_position, PersonRadius)
@@ -34,21 +41,29 @@ func _process(delta: float) -> void:
 	if state >= 1.0:
 		# Fully lit - use light texture
 		texture = light_texture
+		_happy_accum += delta
+		if _happy_accum >= happy_time:
+			if not dancing:
+				dancing = true
+				_player_node.lightBank += dancing_light
+	if dancing:
+		rotation_degrees += 10.0
 	else:
+		rotation_degrees = 0.0	
+	if state <= 0:
 		# Dark or partially lit - use dark texture
 		texture = dark_texture
+		dancing = false
+		_happy_accum = 0.0
 	
-	# Only move if we're in dark state (for now, always move - state management comes later)
-	# Movement pulses occur every move_pulse_speed seconds
-	if move_pulse_speed <= 0.0:
-		return
 	
-	var period := move_pulse_speed
+	
 	if state < 1.0:
 		_pulse_accum += delta
 	
 	while _pulse_accum >= period:
 		_pulse_accum -= period
+		period = move_pulse_speed + randf_range(-move_pulse_speed_variance, move_pulse_speed_variance)
 		_attempt_movement_pulse()
 
 func _attempt_movement_pulse() -> void:
@@ -88,7 +103,11 @@ func _attempt_movement_pulse() -> void:
 	global_position = new_position
 
 func _steal_light() -> void:
-	# Placeholder for light stealing - decrease lightBank by lightSteal
-	# TODO: Implement proper lightBank access and decrease
+	get_tree().paused = true
+	var timer := get_tree().create_timer(5.0, true)
+	await timer.timeout
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 	if _player_node != null and _player_node.has_method("decrease_light_bank"):
 		_player_node.call("decrease_light_bank", lightSteal)
+		queue_free()
