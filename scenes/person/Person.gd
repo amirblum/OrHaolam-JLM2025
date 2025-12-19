@@ -34,6 +34,7 @@ func _ready() -> void:
 		push_warning("Person: Could not find Player node at /root/Main/Player")
 	# Set dark texture on start
 	texture = dark_texture
+	rand_modulate()
 
 func _process(delta: float) -> void:
 	
@@ -126,4 +127,7 @@ func getTexture() -> Texture2D:
 	else:
 		return dark_texture
 	
+func rand_modulate() -> void:
+	var col = randf_range(0.8, 1)
+	modulate = Color(col,col,col)
 	
