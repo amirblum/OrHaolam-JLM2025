@@ -3,8 +3,8 @@ class_name Person
 
 # Movement configuration (PRD parameters)
 @export var move_pulse_speed: float = 1.2 # Seconds between movement pulses, PRD `movePulseSpeed`
-@export var move_pulse_speed_variance: float = 0.5 # Variance in movement pulse speed, PRD `movePulseSpeedVariance`
-@export var walk_distance: float = 7.8 # Distance moved per pulse, PRD `walkDistance`
+@export var move_pulse_speed_variance: float = 1.4 # Variance in movement pulse speed, PRD `movePulseSpeedVariance`
+@export var walk_distance: float = 7.6 # Distance moved per pulse, PRD `walkDistance`
 @export var drunkness: float = 2 # Random angle offset factor (radians), PRD `drunkness`
 @export var lightSteal: float = 30.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
 @export var PersonRadius: float = 5.0

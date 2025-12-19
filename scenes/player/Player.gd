@@ -53,10 +53,10 @@ func _ready() -> void:
 	# Set up the light bank drawing
 	light_bank_node.draw.connect(func():
 		# 1. Draw outer white rim circle
-		light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius + rim, Color.WHITE)
+		#light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius + rim, Color(0.98, 0.655, 0.478, 1.0))
 		
 		# 2. Draw the base grey inner circle (empty state)
-		light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius, Color.DIM_GRAY)
+		light_bank_node.draw_circle(Vector2.ZERO, light_bank_radius-0.1, Color(0.149, 0.133, 0.384, 1.0))
 		
 		# 3. Calculate fill height based on lightBank percentage
 		var fill_percent := clampf(lightBank / 100.0, 0.0, 1.0)
@@ -64,7 +64,7 @@ func _ready() -> void:
 		# 4. Draw the white fill polygon representing the filled portion
 		var points := _get_circle_fill_polygon(light_bank_radius, fill_percent)
 		if points.size() > 0:
-			light_bank_node.draw_colored_polygon(points, Color.WHITE)
+			light_bank_node.draw_colored_polygon(points, Color(0.957, 1.0, 1.0, 1.0))
 	)
 	light_bank_node.queue_redraw()
 	
@@ -80,11 +80,11 @@ func _ready() -> void:
 	
 	queue_redraw()
 
-func _draw() -> void:
-	# Draw a circle at the screen center (where beams originate) with radius equal to player_radius
-	var screen_center := get_viewport_rect().size / 2
-	var local_center := to_local(screen_center)
-	draw_circle(local_center, player_radius, Color(1.0, 1.0, 1.0, 0.2))
+#func _draw() -> void:
+	## Draw a circle at the screen center (where beams originate) with radius equal to player_radius
+	#var screen_center := get_viewport_rect().size / 2
+	#var local_center := to_local(screen_center)
+	#draw_circle(local_center, player_radius, Color(1.0, 0.0, 1.0, 1.0))
 
 func _get_circle_fill_polygon(radius: float, fill_percent: float) -> PackedVector2Array:
 	"""Generate polygon points that fill a circle from bottom to given percentage"""

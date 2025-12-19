@@ -1,15 +1,16 @@
-[gd_scene load_steps=11 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=12 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d0mitqqrbp2aj" path="res://assets/BG.png" id="2_3km4f"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
-[ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
+[ext_resource type="Texture2D" uid="uid://cye0pant5a276" path="res://assets/finals/bg_dark.png" id="3_qkm1d"]
 [ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
 [ext_resource type="Texture2D" uid="uid://byw7585wbx1xx" path="res://assets/finals/moscow_dark.png" id="6_3km4f"]
 [ext_resource type="Texture2D" uid="uid://bh0mhmaav0vpo" path="res://assets/finals/moscow_light.png" id="7_qkm1d"]
 [ext_resource type="Texture2D" uid="uid://cd6nadbf7vkjh" path="res://assets/finals/rome_dark.png" id="8_p5fgu"]
 [ext_resource type="Texture2D" uid="uid://bu21iplrivnd" path="res://assets/finals/rome_light.png" id="9_2tpxt"]
+[ext_resource type="Texture2D" uid="uid://dd041o0te07mt" path="res://assets/finals/jerusalem.png" id="11_qkm1d"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -18,6 +19,16 @@ total_persons_for_audio = 40
 [node name="Bg" type="Sprite2D" parent="."]
 position = Vector2(960, 540)
 texture = ExtResource("2_3km4f")
+
+[node name="BgDark" type="Sprite2D" parent="."]
+position = Vector2(955, 608)
+scale = Vector2(0.5383163, 0.5383163)
+texture = ExtResource("3_qkm1d")
+
+[node name="Jerusalem" type="Sprite2D" parent="."]
+position = Vector2(954.00006, 518)
+scale = Vector2(1.0026947, 1.0026954)
+texture = ExtResource("11_qkm1d")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
@@ -59,7 +70,7 @@ dark_texture = ExtResource("6_3km4f")
 light_texture = ExtResource("7_qkm1d")
 spawn_rate = 12.0
 spawn_variance = 2.0
-max_spawn_radius = 400.0
+max_spawn_radius = 350.0
 min_spawn_radius = 25.0
 
 [node name="City3" parent="Cities" instance=ExtResource("3_city")]
@@ -92,9 +103,3 @@ min_spawn_radius = 25.0
 [node name="Persons" type="Node2D" parent="."]
 
 [node name="AudioManager" parent="." instance=ExtResource("5_dc040")]
-
-[node name="Jerusalem" type="Sprite2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.7607843)
-position = Vector2(960, 540)
-scale = Vector2(0.5600005, 0.5600006)
-texture = ExtResource("4_gyg6b")
