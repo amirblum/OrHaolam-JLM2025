@@ -15,6 +15,8 @@ var _track_thresholds: Array[float] = []
 func _ready() -> void:
 	_setup_audio_players()
 	_calculate_thresholds()
+	# Set initial volumes immediately after setup to prevent all tracks playing at full volume
+	_update_tracks()
 
 func _setup_audio_players() -> void:
 	# Create an AudioStreamPlayer for each track
@@ -23,7 +25,8 @@ func _setup_audio_players() -> void:
 		player.name = "Track_%d" % (i + 1)
 		player.stream = tracks[i]
 		player.autoplay = false
-		player.volume_db = 0.0
+		# Set initial volume to muted - will be updated by _update_tracks()
+		player.volume_db = -80.0
 		
 		# Set loop mode
 		if tracks[i] is AudioStreamOggVorbis:
