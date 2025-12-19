@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://bifmkrcaqpfmg"]
+[gd_scene load_steps=11 format=3 uid="uid://bifmkrcaqpfmg"]
 
 [ext_resource type="Script" uid="uid://cm6rnwvejgu0e" path="res://scenes/main/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://bva5bjssw887x" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="Texture2D" uid="uid://d0mitqqrbp2aj" path="res://assets/BG.png" id="2_3km4f"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://d3s05mucicfji" path="res://scenes/city/City.tscn" id="3_city"]
 [ext_resource type="Texture2D" uid="uid://b38o3w1rxwl32" path="res://assets/mockups/jerusalem.png" id="4_gyg6b"]
 [ext_resource type="PackedScene" uid="uid://dwoysonwd30mj" path="res://scenes/audio/AudioManager.tscn" id="5_dc040"]
@@ -12,27 +13,30 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
-DEBUG = true
 total_persons_for_audio = 40
+
+[node name="Bg" type="Sprite2D" parent="."]
+position = Vector2(960, 540)
+texture = ExtResource("2_3km4f")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
 minClickDist = 4.0
-lightDecay = 2.0
+lightDecay = 1.9
 hold_enable = true
-auto_click_rate = 6.0
+auto_click_rate = 6.5
 lightBank = 0.0
 light_bank_radius = 45.0
 rim = 5.0
 fill_rate = 1.5
-light_cost = 2.2
+light_cost = 2.1
 
 [node name="Beams" type="Node2D" parent="Player"]
 
 [node name="Cities" type="Node2D" parent="."]
 
 [node name="City1" parent="Cities" instance=ExtResource("3_city")]
-position = Vector2(103.99999, 84.999985)
+position = Vector2(139, 116)
 spawn_rate = 12.0
 spawn_variance = 2.0
 max_spawn_radius = 400.0
@@ -43,7 +47,7 @@ position = Vector2(970.0001, 65.999985)
 texture = ExtResource("8_p5fgu")
 dark_texture = ExtResource("8_p5fgu")
 light_texture = ExtResource("9_2tpxt")
-spawn_rate = 35.0
+spawn_rate = 52.0
 spawn_variance = 6.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
@@ -63,14 +67,14 @@ position = Vector2(883.99994, 1007)
 texture = ExtResource("8_p5fgu")
 dark_texture = ExtResource("8_p5fgu")
 light_texture = ExtResource("9_2tpxt")
-spawn_rate = 42.0
+spawn_rate = 60.0
 spawn_variance = 10.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
 
 [node name="City6" parent="Cities" instance=ExtResource("3_city")]
 position = Vector2(1774.9998, 833.99994)
-spawn_rate = 20.0
+spawn_rate = 15.0
 spawn_variance = 8.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
@@ -80,7 +84,7 @@ position = Vector2(142, 917)
 texture = ExtResource("6_3km4f")
 dark_texture = ExtResource("6_3km4f")
 light_texture = ExtResource("7_qkm1d")
-spawn_rate = 22.0
+spawn_rate = 20.0
 spawn_variance = 6.0
 max_spawn_radius = 150.0
 min_spawn_radius = 25.0
@@ -92,5 +96,5 @@ min_spawn_radius = 25.0
 [node name="Jerusalem" type="Sprite2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.7607843)
 position = Vector2(960, 540)
-scale = Vector2(0.61333275, 0.6133328)
+scale = Vector2(0.5600005, 0.5600006)
 texture = ExtResource("4_gyg6b")

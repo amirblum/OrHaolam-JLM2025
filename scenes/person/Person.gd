@@ -2,10 +2,10 @@ extends Sprite2D
 class_name Person
 
 # Movement configuration (PRD parameters)
-@export var move_pulse_speed: float = 1. # Seconds between movement pulses, PRD `movePulseSpeed`
+@export var move_pulse_speed: float = 1.2 # Seconds between movement pulses, PRD `movePulseSpeed`
 @export var move_pulse_speed_variance: float = 0.5 # Variance in movement pulse speed, PRD `movePulseSpeedVariance`
-@export var walk_distance: float = 9.0 # Distance moved per pulse, PRD `walkDistance`
-@export var drunkness: float = 1.5 # Random angle offset factor (radians), PRD `drunkness`
+@export var walk_distance: float = 7.8 # Distance moved per pulse, PRD `walkDistance`
+@export var drunkness: float = 2 # Random angle offset factor (radians), PRD `drunkness`
 @export var lightSteal: float = 30.0 # Light stolen when Person touches Jerusalem, PRD `lightSteal`
 @export var PersonRadius: float = 5.0
 @export var happy_time: float = 0.0 # Time in light before a Person becomes happy
@@ -14,9 +14,13 @@ class_name Person
 
 # Texture resources for dark and light states
 @export var dark_texture: Texture2D
+@export var dark_text_2: Texture2D
 @export var light_texture: Texture2D
 
 # Internal state
+var animToggle = false
+var animSwitch = 0.3
+var animAccum = 0
 var _pulse_accum := 0.0
 var _happy_accum := 0.0
 var _player_node: Node2D = null
@@ -47,12 +51,12 @@ func _process(delta: float) -> void:
 				dancing = true
 				_player_node.lightBank += dancing_light
 	if dancing:
-		rotation_degrees += 10.0
+		rotation_degrees += randf_range(-4,4)
 	else:
 		rotation_degrees = 0.0	
 	if state <= 0:
 		# Dark or partially lit - use dark texture
-		texture = dark_texture
+		texture = getTexture()
 		dancing = false
 		_happy_accum = 0.0
 	
@@ -111,3 +115,15 @@ func _steal_light() -> void:
 	if _player_node != null and _player_node.has_method("decrease_light_bank"):
 		_player_node.call("decrease_light_bank", lightSteal)
 		queue_free()
+
+func getTexture() -> Texture2D:
+	animAccum += get_process_delta_time()
+	if animAccum > animSwitch:
+		animAccum = 0
+		animToggle = !animToggle
+	if animToggle:
+		return dark_text_2
+	else:
+		return dark_texture
+	
+	
