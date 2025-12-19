@@ -128,6 +128,6 @@ func getTexture() -> Texture2D:
 		return dark_texture
 	
 func rand_modulate() -> void:
-	var col = randf_range(0.8, 1)
+	var col = randf_range(0.7, 1)
 	modulate = Color(col,col,col)
 	

@@ -124,7 +124,7 @@ func _draw() -> void:
 	
 	# 3. Draw the filled shape
 	# Color: faa77a
-	var color = Color.html("faa77a")
+	var color = Color.html("f4e269")
 	draw_polygon(points, PackedColorArray([color]))
 	
 	## 4. Draw a solid white outline for better definition
