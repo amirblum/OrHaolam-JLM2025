@@ -17,7 +17,7 @@ var audio_percentage: float = 0.0
 var persons: Array[Node2D] = []
 
 func _ready() -> void:
-	# Connect to all City signals for person spawning
+	await get_tree().process_frame
 	_connect_city_signals()
 	
 	# Initialize audio manager with current percentage
@@ -32,9 +32,10 @@ func _ready() -> void:
 		move_child(dbg, get_child_count() - 1)
 
 func _connect_city_signals() -> void:
-	# Connect signals for existing cities
 	for city in cities_container.get_children():
 		if city is City:
+			if city.person_spawned.is_connected(_on_person_spawned):
+				city.person_spawned.disconnect(_on_person_spawned)
 			city.person_spawned.connect(_on_person_spawned)
 
 func _on_person_spawned(person: Node2D) -> void:
@@ -45,10 +46,12 @@ func add_person(person: Node2D) -> void:
 	if person == null or not is_instance_valid(person):
 		return
 	
+	if person in persons or person.get_parent() == persons_container:
+		return
+	
 	persons_container.add_child(person)
 	persons.append(person)
 	
-	# Clean up reference when person is removed
 	person.tree_exited.connect(func() -> void:
 		persons.erase(person)
 	)

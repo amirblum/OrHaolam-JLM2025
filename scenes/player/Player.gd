@@ -26,8 +26,8 @@ static func _unwrap_near(a: float, ref: float) -> float:
 # Layer/container for all active beam instances (cones)
 @onready var beams_layer: Node2D = get_node_or_null("Beams")
 
-# Reference to the Jerusalem sprite
-@onready var jerusalem: Sprite2D = get_node_or_null("Jerusalem")
+# Customizable position marker for Jerusalem center (can be placed anywhere in the scene)
+@export var jerusalem_center_marker: NodePath = NodePath("")
 
 # Accessible memory: keep references to currently-active beam instances.
 var beams: Array[Node2D] = []
@@ -40,15 +40,33 @@ var _space_down := false
 var _click_accum := 0.0
 var time_accum: = 0.0
 
+# Helper function to get the Jerusalem center position
+func get_jerusalem_center() -> Vector2:
+	# First, try to use the custom position marker if set
+	if jerusalem_center_marker != NodePath(""):
+		var marker_node = get_node_or_null(jerusalem_center_marker)
+		if marker_node != null and is_instance_valid(marker_node) and marker_node is Node2D:
+			return (marker_node as Node2D).global_position
+	
+	# Fallback to viewport center if no marker is set
+	return get_viewport_rect().size / 2
+
 func _ready() -> void:
 	# Create the light bank visual indicator
 	light_bank_node = Node2D.new()
 	light_bank_node.name = "lightBank"
 	add_child(light_bank_node)
 	
-	# Position at the center of the screen
-	var screen_center := get_viewport_rect().size / 2
-	light_bank_node.global_position = screen_center
+	# Ensure there is always a Beams container, even if the scene wasn't set up yet.
+	if beams_layer == null:
+		beams_layer = Node2D.new()
+		beams_layer.name = "Beams"
+		add_child(beams_layer)
+	
+	await get_tree().process_frame
+	
+	var jerusalem_center := get_jerusalem_center()
+	light_bank_node.global_position = jerusalem_center
 	
 	# Set up the light bank drawing
 	light_bank_node.draw.connect(func():
@@ -67,16 +85,6 @@ func _ready() -> void:
 			light_bank_node.draw_colored_polygon(points, Color(0.957, 1.0, 1.0, 1.0))
 	)
 	light_bank_node.queue_redraw()
-	
-	# Ensure there is always a Beams container, even if the scene wasn't set up yet.
-	if beams_layer == null:
-		beams_layer = Node2D.new()
-		beams_layer.name = "Beams"
-		add_child(beams_layer)
-	
-	# Position Jerusalem sprite at the screen center (where beams originate)
-	if jerusalem != null:
-		jerusalem.position = to_local(screen_center)
 	
 	queue_redraw()
 
@@ -181,8 +189,8 @@ func _handle_click(click_pos: Vector2) -> void:
 		return
 	
 	# Origin is the center of the screen as per requirements (Jerusalem).
-	var screen_center := get_viewport_rect().size / 2
-	var v := click_pos - screen_center
+	var jerusalem_center := get_jerusalem_center()
+	var v := click_pos - jerusalem_center
 	if v.length() < minClickDist:
 		return
 	
@@ -196,13 +204,13 @@ func _handle_click(click_pos: Vector2) -> void:
 	var click_angle := v.angle()
 
 	# 1) If click hits an existing beam -> expand it (PRD behavior).
-	var hit_cone: Node2D = _find_hit_cone(screen_center, click_pos, click_angle)
+	var hit_cone: Node2D = _find_hit_cone(jerusalem_center, click_pos, click_angle)
 	if hit_cone != null:
 		if hit_cone.has_method("apply_click_growth"):
 			hit_cone.call("apply_click_growth", click_angle, clickImpact)
 	else:
 		# 2) Miss all beams -> spawn a new one centered at click angle.
-		_spawn_cone_at_angle(click_angle, clickImpact, screen_center)
+		_spawn_cone_at_angle(click_angle, clickImpact, jerusalem_center)
 
 	# 3) Merge any beams that now touch/overlap.
 	_merge_beams(click_angle)
@@ -327,11 +335,11 @@ func light_state(point: Vector2, radius: float) -> float:
 		0.5 - Some angles are in beams OR angles are in different beams
 		1.0 - All three angles are in the same beam
 	"""
-	# Get the screen center (Jerusalem origin)
-	var screen_center := get_viewport_rect().size / 2
+	# Get the Jerusalem center origin
+	var jerusalem_center := get_jerusalem_center()
 	
-	# Calculate vector from screen center to the point
-	var v := point - screen_center
+	# Calculate vector from Jerusalem center to the point
+	var v := point - jerusalem_center
 	var distance := v.length()
 	
 	# Calculate the three angles

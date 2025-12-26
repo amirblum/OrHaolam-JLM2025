@@ -30,6 +30,9 @@ position = Vector2(954.00006, 518)
 scale = Vector2(1.0026947, 1.0026954)
 texture = ExtResource("11_qkm1d")
 
+[node name="BeamOrigin" type="Node2D" parent="Jerusalem"]
+position = Vector2(8.975751, 22.93817)
+
 [node name="Player" parent="." instance=ExtResource("2_player")]
 clickImpact = 1.0
 minClickDist = 4.0
@@ -41,6 +44,7 @@ light_bank_radius = 45.0
 rim = 5.0
 fill_rate = 1.5
 light_cost = 2.1
+jerusalem_center_marker = NodePath("../Jerusalem/BeamOrigin")
 
 [node name="Beams" type="Node2D" parent="Player"]
 

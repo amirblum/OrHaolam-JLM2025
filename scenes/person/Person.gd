@@ -72,11 +72,16 @@ func _process(delta: float) -> void:
 		_attempt_movement_pulse()
 
 func _attempt_movement_pulse() -> void:
-	# Get screen center (Jerusalem position)
-	var screen_center := get_viewport_rect().size / 2
+	# Get Jerusalem center position
+	# Use Player's get_jerusalem_center() if available, otherwise fall back to viewport size
+	var jerusalem_center: Vector2
+	if _player_node != null and _player_node.has_method("get_jerusalem_center"):
+		jerusalem_center = _player_node.call("get_jerusalem_center")
+	else:
+		jerusalem_center = get_viewport_rect().size / 2
 	
 	# Calculate direction toward Jerusalem
-	var to_center := screen_center - global_position
+	var to_center := jerusalem_center - global_position
 	var distance_to_center := to_center.length()
 	
 	# If already within JerusalemRadius, trigger light stealing and don't move
@@ -96,7 +101,7 @@ func _attempt_movement_pulse() -> void:
 	var new_position := global_position + move_vector
 	
 	# Check if the new position would be within JerusalemRadius
-	var new_to_center := screen_center - new_position
+	var new_to_center := jerusalem_center - new_position
 	var new_distance := new_to_center.length()
 	
 	if _player_node != null and new_distance <= _player_node.player_radius:
