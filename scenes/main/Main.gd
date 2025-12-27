@@ -8,16 +8,20 @@ extends Node2D
 # Percentage for audio layering (0.0 to 100.0) - calculated from light state persons
 var audio_percentage: float = 0.0
 
-@onready var _debug_scene := preload("res://scenes/debug/Debug.tscn")
 @onready var persons_container: Node2D = get_node("Persons")
 @onready var cities_container: Node2D = get_node("Cities")
-@onready var audio_manager = get_node("AudioManager")
+var audio_manager: Node = null  # Will be initialized in _ready() to avoid @onready issues in web builds
+var _debug_scene: PackedScene = null  # Will be loaded only if needed and exists
 
 # Array to track all Person instances
 var persons: Array[Node2D] = []
 
 func _ready() -> void:
 	await get_tree().process_frame
+	
+	# Get audio_manager directly (avoid @onready issues in web builds)
+	audio_manager = get_node_or_null("AudioManager")
+	
 	_connect_city_signals()
 	
 	# Initialize audio manager with current percentage
@@ -25,11 +29,16 @@ func _ready() -> void:
 		audio_manager.set_percentage(audio_percentage)
 	
 	if DEBUG:
-		var dbg := _debug_scene.instantiate()
-		dbg.name = "Debug"
-		add_child(dbg)
-		# Ensure it sits after Player in the tree; visual overlay is handled by CanvasLayer in Debug.gd.
-		move_child(dbg, get_child_count() - 1)
+		# Load debug scene only if it exists (may not be in web builds)
+		if _debug_scene == null:
+			_debug_scene = load("res://scenes/debug/Debug.tscn") as PackedScene
+		
+		if _debug_scene != null:
+			var dbg := _debug_scene.instantiate()
+			dbg.name = "Debug"
+			add_child(dbg)
+			# Ensure it sits after Player in the tree; visual overlay is handled by CanvasLayer in Debug.gd.
+			move_child(dbg, get_child_count() - 1)
 
 func _connect_city_signals() -> void:
 	for city in cities_container.get_children():
@@ -65,6 +74,9 @@ func _process(_delta: float) -> void:
 	_calculate_audio_percentage()
 	
 	# Update audio manager with calculated percentage
+	if not audio_manager:
+		audio_manager = get_node_or_null("AudioManager")
+	
 	if audio_manager:
 		audio_manager.set_percentage(audio_percentage)
 	
