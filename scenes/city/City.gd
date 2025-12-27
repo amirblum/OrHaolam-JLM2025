@@ -103,11 +103,13 @@ func _spawn_person() -> void:
 	
 	person.global_position = global_position + spawn_offset
 	
-	# Emit signal
+	# Emit signal - Main.gd will handle adding the person via _on_person_spawned
 	person_spawned.emit(person)
 	
-	# Fallback: directly add to Persons container if signal doesn't work
-	if _persons_container != null and is_instance_valid(_persons_container):
-		_persons_container.add_child(person)
+	# Fallback: directly add to Persons container if signal handler doesn't work
+	# Only add if the person doesn't already have a parent (signal handler may have already added it)
+	if person.get_parent() == null:
+		if _persons_container != null and is_instance_valid(_persons_container):
+			_persons_container.add_child(person)
 		if _main_node != null and is_instance_valid(_main_node) and _main_node.has_method("add_person"):
 			_main_node.add_person(person)
